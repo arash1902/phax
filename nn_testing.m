@@ -1,0 +1,19 @@
+function test_error = nn_testing(  num_hidden_layer, ...
+                                   input_layer_size, ...
+                                   hidden_layer_size, ...
+                                   num_labels, ...
+                                   X1, y1, lambda,sharp_factor,...
+                                   Theta1, Theta2, Theta2_1, Theta2_2)
+
+if ~exist('Theta2_1', 'var') || isempty(Theta2_1)
+    Theta2_1 = [];
+end
+if ~exist('Theta2_2', 'var') || isempty(Theta2_2)
+    Theta2_2 = [];
+end
+pred1 = predict(Theta1, Theta2, Theta2_1, Theta2_2,...
+                X1', num_labels, sharp_factor, num_hidden_layer);
+
+test_error = mean(mean(double(round(pred1*10) == (y1'*10)))) * 100;
+
+

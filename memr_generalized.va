@@ -1,0 +1,112 @@
+// voltage-controlled current source
+`include "disciplines.vams"
+`include "constants.vams"
+
+module memristor(pl, mn, x, gnd);
+	inout pl, mn, x, gnd;
+	electrical pl, mn, x, gnd;
+		//parameter real Ron=100, Roff=16e3, Rinit=5e3, beta=1e13, vtp=2.1, vtn=2.1, nu1=0.0001, nu2=0.1;
+		
+		//parameter real a1=0.17, a2=0.17, b=0.05, vtp=0.16, vtn=0.15, Ap=4000, An=4000;
+		parameter real a1=1.6e-4, a2=1.6e-4, b=0.05, vtp=4, vtn=4, Ap=816000, An=816000;
+		parameter real xp=0.985, xn=0.985, alphap=0.1, alphan=0.1,  xo=0.02;
+		//parameter real Ron=100, Roff=1e7, Rinit=5e3, beta=1e13, vtp=2.1, vtn=2.1, nu1=0.0001, nu2=0.1;
+		parameter real eta=1;
+	
+	function real wp;
+		input  V;
+		real V;
+		begin
+			wp = (xp-V)/(1-xp)+1;
+		end
+	endfunction
+	
+	function real wn;
+		input  V;
+		real V;
+		begin
+			wn = (V)/(1-xn);
+		end
+	endfunction
+	
+	function real G;
+		input V;
+		real  V;
+		begin
+			if(V<=vtp)
+				begin
+					if(V>=-vtn)
+						G = 0;
+					else
+						G = -An*(exp(-V)-exp(vtn));
+				end
+			else
+				G = Ap*(exp(V)-exp(vtp));
+		end
+	endfunction 	
+	
+	function real F;
+		input V1,V2;
+		real  V1,V2;
+		begin
+			if(eta*V1>=0)
+				begin
+					if(V2>=xp)
+						F = exp(-alphap*(V2-xp))*wp(V2);
+					else
+						F = 1;
+				end
+			else
+				begin
+					if(V2<=(1-xn))
+						F = exp(alphan*(V2+xn-1))*wn(V2);
+					else
+						F = 1;
+				end
+		end
+	endfunction 	
+	
+	function real IVRel;
+		input  V1,V2;
+		real V1,V2;
+		begin
+			if(V1>=0)
+				IVRel = a1*V2*sinh(b*V1);
+			else
+				IVRel = a2*V2*sinh(b*V1);
+		end
+	endfunction
+
+// function sinh;
+// input  x;
+// real x;
+	// begin
+		// sinh = (exp(x)-exp(-x))/2;
+	// end
+// endfunction
+
+
+
+
+	branch(x,gnd) cx;
+	//branch(gnd,x) gx;
+
+	//branch(x,gnd) raux;
+	//branch(x,gnd) gx;
+	
+	analog begin: mem_mod
+		if (analysis("ic"))
+			V(cx) <+ xo;
+		else
+			I(cx) <+ ddt(1*V(x, gnd));
+
+			I(gnd,x) <+ eta*F(V(pl,mn),V(x,gnd))*G(V(pl,mn));
+			//I(raux) <+ V(x,gnd)/1e12;
+			I(pl, mn) <+ IVRel(V(pl,mn), V(x,gnd));
+			//I(pl, mn) <+ f1(V(pl,mn))*(f2(f1(V(pl,mn)))*f3(Roff-V(x, gnd))+f2(-f1(V(pl,mn)))*f3(V(x, gnd)-Ron));
+	end
+
+endmodule
+
+
+
