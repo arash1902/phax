@@ -9,7 +9,7 @@ CMOS-memristive implementation of neuromorphic circuits.
 
 Usage
 ***********
-Start with Our_Approach.m. You must change Our_approach for different configuration of network or load new dataset.
+Start with Our_Approach.m. You must change Our_approach.m for modifing the configuration of network or loading new dataset.
 
 
 Developers
