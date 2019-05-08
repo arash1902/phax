@@ -7,6 +7,10 @@ framework, which is called PHAX, is a physical characteristics aware one relying
 CMOS-memristive implementation of neuromorphic circuits. 
 
 
+Usage
+***********
+Start with Our_Approach.m. You must change Our_approach for different configuration of network or load new dataset.
+
 
 Developers
 ***********
@@ -25,6 +29,7 @@ Citation
 ***********
 Please cite following paper:                                               
 M. Ansari et al., "PHAX: Physical Characteristics AwareEx-SituTraining Framework for Inverter-Based Memristive Neuromorphic Circuits," in IEEE Transactions on Computer-Aided Design of Integrated Circuits and Systems, vol. 37, no. 8, pp. 1602-1613, Aug. 2018. doi: 10.1109/TCAD.2017.2764070
+
 
 License
 ***********
